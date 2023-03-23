@@ -66,7 +66,8 @@ LOC_HIDL_VERSION := 4.0
 
 # HIDL
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
-    $(DEVICE_PATH)/configs/hidl/device_framework_compatibility_matrix.xml
+    $(DEVICE_PATH)/configs/hidl/device_framework_compatibility_matrix.xml \
+    vendor/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
 
 DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/configs/hidl/manifest.xml
 DEVICE_MATRIX_FILE := $(DEVICE_PATH)/configs/hidl/compatibility_matrix.xml
@@ -84,6 +85,7 @@ TARGET_KERNEL_CONFIG := phoenix_defconfig
 
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_IMAGE_NAME := Image
 BOARD_KERNEL_SEPARATED_DTBO := true
 
 BOARD_KERNEL_CMDLINE += androidboot.hardware=qcom
@@ -98,6 +100,9 @@ BOARD_KERNEL_CMDLINE += loop.max_part=7
 BOARD_KERNEL_CMDLINE += swiotlb=1
 BOARD_KERNEL_CMDLINE += androidboot.memcg=1 cgroup.memory=nokmem,nosocket
 BOARD_KERNEL_CMDLINE += kpti=off
+
+TARGET_KERNEL_ADDITIONAL_FLAGS := LD=ld.lld AR=llvm-ar NM=llvm-nm LLVM_NM=llvm-nm LLVM=1 LLVM_IAS=1
+TARGET_KERNEL_ADDITIONAL_FLAGS += HOSTCFLAGS="-fuse-ld=lld -Wno-unused-command-line-argument"
 
 # Set header version for bootimage
 # Enable DTB in bootimage and set header version
@@ -156,6 +161,12 @@ TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 
 # Releasetools
 TARGET_RELEASETOOLS_EXTENSIONS := $(DEVICE_PATH)
+
+# Reloaded Properties
+TARGET_SYSTEM_EXT_PROP += $(DEVICE_PATH)/system_ext.prop
+
+# Inherit from ReloadedOS configuration
+include vendor/reloaded/config/BoardConfigReloaded.mk
 
 # Sepolicy
 TARGET_SEPOLICY_DIR := msmsteppe
